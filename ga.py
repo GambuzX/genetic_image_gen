@@ -13,9 +13,12 @@ def mutate(bits):
     cut = randrange(0, len(bits))
     return bits[:cut] + ('1' if bits[cut] == '0' else '0') + bits[cut+1:]
 
-def reproduce(bits1, bits2):
+def reproduce(bits1, bits2, value, target):
     slice = randrange(1, len(bits1)-1)
-    return bits1[:slice] + bits2[slice:]
+    option1 = bits1[:slice] + bits2[slice:]
+    option2 = bits2[:slice] + bits1[slice:]
+
+    return option1 if value(option1, target) > value(option2, target) else option2
 
 def gen_random_population(size, genome_size):
     pop = []
@@ -83,6 +86,7 @@ with open("original.jpg", "rb") as f:
 population_size = 20
 generations = 20
 
+print(value(target,target))
 
 print("[+] Generating initial population")
 population = gen_random_population(population_size, len(target))
@@ -94,7 +98,7 @@ for g in range(generations):
         
         x = roullete_select(population, value, target)
         y = roullete_select(population, value, target)
-        child = reproduce(x,y)
+        child = reproduce(x,y, value, target)
         
         if randrange(0, 10000) == 1: 
             mutate(child)
