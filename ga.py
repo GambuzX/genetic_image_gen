@@ -80,8 +80,8 @@ with open("original.jpg", "rb") as f:
         byte = f.read(1)
         target += get_bits(byte)
 
-population_size = 100
-generations = 100
+population_size = 20
+generations = 20
 
 
 print("[+] Generating initial population")
@@ -90,7 +90,7 @@ for g in range(generations):
     print("[+] Starting generation " + str(g+1))
     new_population = []
     for p in range(population_size):
-        print("... %d\r" % (p+1), end="")
+        print("... %d / %d\r" % ((p+1), population_size), end="")
         
         x = roullete_select(population, value, target)
         y = roullete_select(population, value, target)
@@ -101,7 +101,7 @@ for g in range(generations):
         
         new_population.append(child)
     population = new_population
-    print("[+] Selecting best option")
     best = select_best(population, value, target)
+    print("Generation best was %d\n" % value(best, target))
     write_image(best, g+1)
     
