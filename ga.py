@@ -10,11 +10,8 @@ def value(bits1, bits2):
     return similar
 
 def mutate(bits):
-    new = ""
-    for i in range(len(bits)):
-        chance = randrange(0, 1000)
-        new += bits[i] if chance != 1 else ('0' if bits[i] == '1' else '1')
-    return new
+    cut = randrange(0, len(bits))
+    return bits[:cut] + ('1' if bits[cut] == '0' else '0') + bits[cut+1:]
 
 def reproduce(bits1, bits2):
     slice = randrange(1, len(bits1)-1)
@@ -31,6 +28,7 @@ def gen_random_population(size, genome_size):
 
 def roullete_select(population, val, target):
 
+    choice = random()
     cumulative_values = []
     total = 0
     for pop in population:
@@ -39,9 +37,7 @@ def roullete_select(population, val, target):
         cumulative_values.append(total)
     for i in range(len(cumulative_values)):
         cumulative_values[i] = cumulative_values[i] * 1.0 / total
-    
-    choice = random()
-    for i in range(len(cumulative_values)):
+
         if i == 0 and choice <= cumulative_values[i]:
             return population[i]
 
@@ -85,21 +81,27 @@ with open("original.jpg", "rb") as f:
         target += get_bits(byte)
 
 population_size = 100
-generations = 1000
+generations = 100
 
 
+print("[+] Generating initial population")
 population = gen_random_population(population_size, len(target))
 for g in range(generations):
     print("[+] Starting generation " + str(g+1))
     new_population = []
     for p in range(population_size):
         print("... %d\r" % (p+1), end="")
+        
         x = roullete_select(population, value, target)
         y = roullete_select(population, value, target)
         child = reproduce(x,y)
-        mutate(child)
+        
+        if randrange(0, 10000) == 1: 
+            mutate(child)
+        
         new_population.append(child)
     population = new_population
+    print("[+] Selecting best option")
     best = select_best(population, value, target)
     write_image(best, g+1)
     
